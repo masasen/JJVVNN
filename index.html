@@ -1,0 +1,20 @@
+<!-- 検索結果の前に追加 -->
+<div class="results-controls" id="resultsControls" style="display: none;">
+    <div class="controls-group">
+        <label for="sortBy">並び替え:</label>
+        <select id="sortBy" class="form-control">
+            <option value="published-desc">公開日（新しい順）</option>
+            <option value="published-asc">公開日（古い順）</option>
+            <option value="title">タイトル順</option>
+        </select>
+    </div>
+    
+    <div class="controls-group">
+        <label for="filterText">フィルター:</label>
+        <input type="text" id="filterText" class="form-control" placeholder="キーワードで絞り込み">
+    </div>
+
+    <div class="controls-group">
+        <button id="exportBtn" class="btn btn-secondary">エクスポート</button>
+    </div>
+</div>
