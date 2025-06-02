@@ -77,13 +77,16 @@ class UI {
     }
 
     initializeHistoryEventListeners() {
-        this.showHistoryBtn.addEventListener('click', () => this.openHistoryModal());
-        this.closeHistoryBtn.addEventListener('click', () => this.closeHistoryModal());
-        this.historyModal.addEventListener('click', (e) => {
-            if (e.target === this.historyModal) {
-                this.closeHistoryModal();
-            }
-        });
+        initializeEventListeners() {
+            // 既存のイベントリスナーに追加
+            this.showHistoryBtn.addEventListener('click', () => this.openHistoryModal());
+            this.closeHistoryBtn.addEventListener('click', () => this.closeHistoryModal());
+            this.historyModal.addEventListener('click', (e) => {
+                if (e.target === this.historyModal) {
+                    this.closeHistoryModal();
+                }
+            });
+        }
     }
 
     loadSearchHistory() {
