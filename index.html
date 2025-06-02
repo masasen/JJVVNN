@@ -10,6 +10,27 @@
     <div class="container">
         <h1>脆弱性調査ツール</h1>
         
+        <!-- 検索履歴ボタンを追加 -->
+        <div class="history-controls">
+            <button id="showHistoryBtn" class="btn btn-secondary">検索履歴</button>
+        </div>
+
+        <!-- 検索履歴モーダル -->
+        <div id="historyModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>検索履歴</h2>
+                    <button id="closeHistoryBtn" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="searchHistory" class="history-list">
+                        <!-- 履歴項目がここに動的に追加されます -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 既存のform-groupsはそのまま -->
         <div class="search-form">
             <div class="form-group">
                 <label for="vendorSelect">ベンダー:</label>
@@ -77,9 +98,5 @@
         <!-- メッセージ表示エリア -->
         <div id="message" class="message" style="display: none;"></div>
     </div>
-
-    <script src="js/api.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/main.js"></script>
 </body>
 </html>

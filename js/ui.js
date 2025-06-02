@@ -76,21 +76,113 @@ class UI {
         this.resultsControls.style.display = 'flex';
     }
 
+    initializeHistoryEventListeners() {
+        this.showHistoryBtn.addEventListener('click', () => this.openHistoryModal());
+        this.closeHistoryBtn.addEventListener('click', () => this.closeHistoryModal());
+        this.historyModal.addEventListener('click', (e) => {
+            if (e.target === this.historyModal) {
+                this.closeHistoryModal();
+            }
+        });
+    }
+
+    loadSearchHistory() {
+        const history = localStorage.getItem('searchHistory');
+        return history ? JSON.parse(history) : [];
+    }
+
+    saveSearchHistory() {
+        localStorage.setItem('searchHistory', JSON.stringify(this.searchHistoryData));
+    }
+
+    addToHistory(searchParams) {
+        const historyItem = {
+            id: Date.now(),
+            date: new Date().toISOString(),
+            params: searchParams,
+            resultCount: this.currentResults.length
+        };
+
+        this.searchHistoryData.unshift(historyItem);
+        // 最大50件まで保存
+        if (this.searchHistoryData.length > 50) {
+            this.searchHistoryData.pop();
+        }
+        this.saveSearchHistory();
+    }
+
+    renderSearchHistory() {
+        this.searchHistory.innerHTML = '';
+        
+        if (this.searchHistoryData.length === 0) {
+            this.searchHistory.innerHTML = '<p>検索履歴はありません。</p>';
+            return;
+        }
+
+        this.searchHistoryData.forEach(item => {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <div class="history-item-content">
+                    <div>ベンダー: ${item.params.vendor}</div>
+                    <div>製品: ${item.params.product}</div>
+                    <div>期間: ${item.params.startDate} ～ ${item.params.endDate}</div>
+                    <div>検索結果: ${item.resultCount}件</div>
+                    <div class="history-item-date">${new Date(item.date).toLocaleString('ja-JP')}</div>
+                </div>
+            `;
+            historyItem.addEventListener('click', () => this.loadHistoryItem(item));
+            this.searchHistory.appendChild(historyItem);
+        });
+    }
+
+    loadHistoryItem(item) {
+        // 検索条件を復元
+        this.vendorSelect.value = item.params.vendor;
+        this.productSelect.value = item.params.product;
+        this.startDateInput.value = item.params.startDate;
+        this.endDateInput.value = item.params.endDate;
+
+        // モーダルを閉じて検索を実行
+        this.closeHistoryModal();
+        this.onSearch();
+    }
+
+    openHistoryModal() {
+        this.renderSearchHistory();
+        this.historyModal.style.display = 'block';
+    }
+
+    closeHistoryModal() {
+        this.historyModal.style.display = 'none';
+    }
+
+    // 既存のonSearch()メソッドを修正
     async onSearch() {
         if (!this.validateSearchParams()) {
             return;
         }
 
+        const searchParams = {
+            vendor: this.vendorSelect.value,
+            product: this.productSelect.value,
+            startDate: this.startDateInput.value,
+            endDate: this.endDateInput.value
+        };
+
         try {
             this.showLoading();
             const vulnList = await api.getVulnOverviewList(
-                this.productSelect.value,
-                this.startDateInput.value,
-                this.endDateInput.value
+                searchParams.product,
+                searchParams.startDate,
+                searchParams.endDate
             );
             
             this.currentResults = vulnList;
             this.updateResultsView();
+
+            // 検索履歴に追加
+            this.addToHistory(searchParams);
 
             if (vulnList.length === 0) {
                 this.showInfo('該当する脆弱性情報は見つかりませんでした');
@@ -101,28 +193,5 @@ class UI {
         } finally {
             this.hideLoading();
         }
-    }
-
-    exportResults() {
-        const filteredResults = this.filterResults(this.currentResults);
-        const sortedResults = this.sortResults(filteredResults);
-        
-        // CSVフォーマットに変換
-        const csvContent = [
-            ['タイトル', '説明', '公開日', 'リンク'].join(','),
-            ...sortedResults.map(result => [
-                `"${result.title.replace(/"/g, '""')}"`,
-                `"${result.description.replace(/"/g, '""')}"`,
-                result.published,
-                result.link
-            ].join(','))
-        ].join('\n');
-
-        // ダウンロード用のリンクを作成
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `vulnerability_report_${new Date().toISOString().split('T')[0]}.csv`;
-        link.click();
     }
 }
