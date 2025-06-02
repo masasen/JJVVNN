@@ -1,20 +1,85 @@
-<!-- 検索結果の前に追加 -->
-<div class="results-controls" id="resultsControls" style="display: none;">
-    <div class="controls-group">
-        <label for="sortBy">並び替え:</label>
-        <select id="sortBy" class="form-control">
-            <option value="published-desc">公開日（新しい順）</option>
-            <option value="published-asc">公開日（古い順）</option>
-            <option value="title">タイトル順</option>
-        </select>
-    </div>
-    
-    <div class="controls-group">
-        <label for="filterText">フィルター:</label>
-        <input type="text" id="filterText" class="form-control" placeholder="キーワードで絞り込み">
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>脆弱性調査ツール</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>脆弱性調査ツール</h1>
+        
+        <div class="search-form">
+            <div class="form-group">
+                <label for="vendorSelect">ベンダー:</label>
+                <select id="vendorSelect" class="form-control">
+                    <option value="">選択してください</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="productSelect">製品:</label>
+                <select id="productSelect" class="form-control" disabled>
+                    <option value="">ベンダーを選択してください</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="versionInput">バージョン:</label>
+                <input type="text" id="versionInput" class="form-control" placeholder="例: 1.0.0">
+            </div>
+
+            <div class="form-group">
+                <label>検索期間:</label>
+                <div class="date-range">
+                    <input type="date" id="startDate" class="form-control">
+                    <span>から</span>
+                    <input type="date" id="endDate" class="form-control">
+                </div>
+            </div>
+
+            <button id="searchBtn" class="btn btn-primary">検索</button>
+        </div>
+
+        <!-- 検索結果の制御 -->
+        <div class="results-controls" id="resultsControls" style="display: none;">
+            <div class="controls-group">
+                <label for="sortBy">並び替え:</label>
+                <select id="sortBy" class="form-control">
+                    <option value="published-desc">公開日（新しい順）</option>
+                    <option value="published-asc">公開日（古い順）</option>
+                    <option value="title">タイトル順</option>
+                </select>
+            </div>
+            
+            <div class="controls-group">
+                <label for="filterText">フィルター:</label>
+                <input type="text" id="filterText" class="form-control" placeholder="キーワードで絞り込み">
+            </div>
+
+            <div class="controls-group">
+                <button id="exportBtn" class="btn btn-secondary">エクスポート</button>
+            </div>
+        </div>
+
+        <!-- 検索結果表示エリア -->
+        <div id="searchResults" class="search-results">
+            <!-- 結果がここに動的に追加されます -->
+        </div>
+
+        <!-- ローディングインジケータ -->
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <div class="loading-text">データを読み込んでいます...</div>
+        </div>
+
+        <!-- メッセージ表示エリア -->
+        <div id="message" class="message" style="display: none;"></div>
     </div>
 
-    <div class="controls-group">
-        <button id="exportBtn" class="btn btn-secondary">エクスポート</button>
-    </div>
-</div>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
