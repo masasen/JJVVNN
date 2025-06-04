@@ -106,3 +106,4 @@ document.addEventListener('DOMContentLoaded', () => {
     ui = new UI();
     initializeApp();
 });
+
