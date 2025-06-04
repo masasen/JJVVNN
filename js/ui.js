@@ -1,13 +1,30 @@
 class UI {
     constructor() {
-        // 既存のプロパティに追加
+        // 検索フォーム関連
+        this.vendorSelect = document.getElementById('vendorSelect');
+        this.productSelect = document.getElementById('productSelect');
+        this.startDateInput = document.getElementById('startDate');
+        this.endDateInput = document.getElementById('endDate');
+        this.searchBtn = document.getElementById('searchBtn');
+
+        // 検索結果表示関連
+        this.resultsContainer = document.getElementById('searchResults');
         this.resultsControls = document.getElementById('resultsControls');
         this.sortBySelect = document.getElementById('sortBy');
         this.filterTextInput = document.getElementById('filterText');
         this.exportBtn = document.getElementById('exportBtn');
+
+        // 履歴表示関連
+        this.historyModal = document.getElementById('historyModal');
+        this.showHistoryBtn = document.getElementById('showHistoryBtn');
+        this.closeHistoryBtn = document.getElementById('closeHistoryBtn');
+        this.searchHistory = document.getElementById('searchHistory');
+
         this.currentResults = [];
+        this.searchHistoryData = this.loadSearchHistory();
 
         this.initializeEventListeners();
+        this.initializeHistoryEventListeners();
     }
 
     initializeEventListeners() {
@@ -15,6 +32,7 @@ class UI {
         this.sortBySelect.addEventListener('change', () => this.updateResultsView());
         this.filterTextInput.addEventListener('input', () => this.updateResultsView());
         this.exportBtn.addEventListener('click', () => this.exportResults());
+        this.searchBtn.addEventListener('click', () => this.onSearch());
     }
 
     sortResults(results) {
@@ -77,16 +95,14 @@ class UI {
     }
 
     initializeHistoryEventListeners() {
-        initializeEventListeners() {
-            // 既存のイベントリスナーに追加
-            this.showHistoryBtn.addEventListener('click', () => this.openHistoryModal());
-            this.closeHistoryBtn.addEventListener('click', () => this.closeHistoryModal());
-            this.historyModal.addEventListener('click', (e) => {
-                if (e.target === this.historyModal) {
-                    this.closeHistoryModal();
-                }
-            });
-        }
+        // 検索履歴モーダル関連のイベント登録
+        this.showHistoryBtn.addEventListener('click', () => this.openHistoryModal());
+        this.closeHistoryBtn.addEventListener('click', () => this.closeHistoryModal());
+        this.historyModal.addEventListener('click', (e) => {
+            if (e.target === this.historyModal) {
+                this.closeHistoryModal();
+            }
+        });
     }
 
     loadSearchHistory() {
