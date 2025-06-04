@@ -5,9 +5,15 @@ class UI {
         this.sortBySelect = document.getElementById('sortBy');
         this.filterTextInput = document.getElementById('filterText');
         this.exportBtn = document.getElementById('exportBtn');
+        this.showHistoryBtn = document.getElementById('showHistoryBtn');
+        this.closeHistoryBtn = document.getElementById('closeHistoryBtn');
+        this.historyModal = document.getElementById('historyModal');
+        this.searchHistory = document.getElementById('searchHistory');
         this.currentResults = [];
+        this.searchHistoryData = this.loadSearchHistory();
 
         this.initializeEventListeners();
+        this.initializeHistoryEventListeners();
     }
 
     initializeEventListeners() {
@@ -77,16 +83,13 @@ class UI {
     }
 
     initializeHistoryEventListeners() {
-        initializeEventListeners() {
-            // 既存のイベントリスナーに追加
-            this.showHistoryBtn.addEventListener('click', () => this.openHistoryModal());
-            this.closeHistoryBtn.addEventListener('click', () => this.closeHistoryModal());
-            this.historyModal.addEventListener('click', (e) => {
-                if (e.target === this.historyModal) {
-                    this.closeHistoryModal();
-                }
-            });
-        }
+        this.showHistoryBtn.addEventListener('click', () => this.openHistoryModal());
+        this.closeHistoryBtn.addEventListener('click', () => this.closeHistoryModal());
+        this.historyModal.addEventListener('click', (e) => {
+            if (e.target === this.historyModal) {
+                this.closeHistoryModal();
+            }
+        });
     }
 
     loadSearchHistory() {
