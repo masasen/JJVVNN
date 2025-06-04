@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://jvndb.jvn.jp/myjvn';
+const API_BASE_URL = 'https://jvndb.jvn.jp/myjvn';
+const CORS_PROXY = 'https://corsproxy.io/?';
 
 class MyJVNAPI {
     async getVendorList(keyword = '') {
@@ -7,7 +8,7 @@ class MyJVNAPI {
             keyword: keyword
         });
         
-        const response = await fetch(`${API_BASE_URL}?${params}`);
+        const response = await fetch(`${CORS_PROXY}${API_BASE_URL}?${params}`);
         const xmlText = await response.text();
         return this.parseVendorList(xmlText);
     }
@@ -19,7 +20,7 @@ class MyJVNAPI {
             keyword: keyword
         });
 
-        const response = await fetch(`${API_BASE_URL}?${params}`);
+        const response = await fetch(`${CORS_PROXY}${API_BASE_URL}?${params}`);
         const xmlText = await response.text();
         return this.parseProductList(xmlText);
     }
@@ -32,7 +33,7 @@ class MyJVNAPI {
             datePublishedEnd: endDate
         });
 
-        const response = await fetch(`${API_BASE_URL}?${params}`);
+        const response = await fetch(`${CORS_PROXY}${API_BASE_URL}?${params}`);
         const xmlText = await response.text();
         return this.parseVulnOverviewList(xmlText);
     }
