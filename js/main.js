@@ -8,17 +8,21 @@ async function initializeApp() {
             vendorList = await api.getVendorList();
         } catch (e) {
             console.error('ベンダーリスト取得エラー:', e);
+
         }
 
         if (!vendorList || vendorList.length === 0) {
+
             vendorList = [
                 { id: 'microsoft', name: 'Microsoft' },
                 { id: 'apple', name: 'Apple' },
                 { id: 'oracle', name: 'Oracle' }
             ];
+
             if (ui) {
                 ui.showError('ベンダー情報の取得に失敗したため、サンプルデータを表示します');
             }
+
         }
         const vendorSelect = document.getElementById('vendorSelect');
         const productSelect = document.getElementById('productSelect');
@@ -58,6 +62,7 @@ async function initializeApp() {
                 var products = await api.getProductList(vendorId);
             } catch (error) {
                 console.error('製品リスト取得エラー:', error);
+
             }
 
             if (!products || products.length === 0) {
@@ -114,3 +119,5 @@ document.addEventListener('DOMContentLoaded', () => {
     ui = new UI();
     initializeApp();
 });
+
+

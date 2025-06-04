@@ -9,9 +9,11 @@ class MyJVNAPI {
         });
         
         const response = await fetch(`${CORS_PROXY}${API_BASE_URL}?${params}`);
+
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
         }
+
         const xmlText = await response.text();
         return this.parseVendorList(xmlText);
     }
@@ -24,9 +26,11 @@ class MyJVNAPI {
         });
 
         const response = await fetch(`${CORS_PROXY}${API_BASE_URL}?${params}`);
+
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
         }
+
         const xmlText = await response.text();
         return this.parseProductList(xmlText);
     }
@@ -40,9 +44,11 @@ class MyJVNAPI {
         });
 
         const response = await fetch(`${CORS_PROXY}${API_BASE_URL}?${params}`);
+
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
         }
+
         const xmlText = await response.text();
         return this.parseVulnOverviewList(xmlText);
     }
