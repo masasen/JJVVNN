@@ -1,7 +1,20 @@
+let ui;
+
 async function initializeApp() {
     try {
-        // 初期ベンダーリストの取得
-        const vendorList = await api.getVendorList();
+        let vendorList = [];
+        // 初期ベンダーリストの取得。失敗した場合はサンプルデータを使用
+        try {
+            vendorList = await api.getVendorList();
+        } catch (e) {
+            console.error('ベンダーリスト取得エラー:', e);
+            vendorList = [
+                { id: 'microsoft', name: 'Microsoft' },
+                { id: 'apple', name: 'Apple' },
+                { id: 'oracle', name: 'Oracle' }
+            ];
+            if (ui) ui.showError('ベンダー情報の取得に失敗したため、サンプルデータを表示します');
+        }
         const vendorSelect = document.getElementById('vendorSelect');
         const productSelect = document.getElementById('productSelect');
         const versionInput = document.getElementById('versionInput');
@@ -37,18 +50,35 @@ async function initializeApp() {
             productSelect.appendChild(defaultOption);
 
             try {
-                const products = await api.getProductList(vendorId);
-                products.forEach(product => {
-                    const opt = document.createElement('option');
-                    opt.value = product.id;
-                    opt.textContent = product.name;
-                    productSelect.appendChild(opt);
-                });
-                productSelect.disabled = false;
+                var products = await api.getProductList(vendorId);
             } catch (error) {
                 console.error('製品リスト取得エラー:', error);
-                productSelect.disabled = true;
+                const fallbackProducts = {
+                    microsoft: [
+                        { id: 'office', name: 'Office' },
+                        { id: 'windows', name: 'Windows' }
+                    ],
+                    apple: [
+                        { id: 'ios', name: 'iOS' },
+                        { id: 'macos', name: 'macOS' }
+                    ],
+                    oracle: [
+                        { id: 'java', name: 'Java' }
+                    ]
+                };
+                products = fallbackProducts[vendorId] || [];
+                if (!products.length && ui) {
+                    ui.showError('製品情報の取得に失敗しました');
+                }
             }
+
+            products.forEach(product => {
+                const opt = document.createElement('option');
+                opt.value = product.id;
+                opt.textContent = product.name;
+                productSelect.appendChild(opt);
+            });
+            productSelect.disabled = products.length === 0;
 
             versionInput.value = '';
             versionInput.disabled = true;
@@ -73,6 +103,7 @@ async function initializeApp() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    new UI();
+    ui = new UI();
     initializeApp();
 });
+
