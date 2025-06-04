@@ -5,6 +5,7 @@ class UI {
         this.sortBySelect = document.getElementById('sortBy');
         this.filterTextInput = document.getElementById('filterText');
         this.exportBtn = document.getElementById('exportBtn');
+        this.searchBtn = document.getElementById('searchBtn');
         this.vendorSelect = document.getElementById('vendorSelect');
         this.productSelect = document.getElementById('productSelect');
         this.versionInput = document.getElementById('versionInput');
@@ -15,7 +16,10 @@ class UI {
         this.closeHistoryBtn = document.getElementById('closeHistoryBtn');
         this.historyModal = document.getElementById('historyModal');
         this.searchHistory = document.getElementById('searchHistory');
+        this.messageBox = document.getElementById('message');
+        this.loadingOverlay = document.getElementById('loading');
         this.currentResults = [];
+        this.searchHistoryData = this.loadSearchHistory();
 
         this.initializeEventListeners();
         this.initializeHistoryEventListeners();
@@ -26,6 +30,7 @@ class UI {
         this.sortBySelect.addEventListener('change', () => this.updateResultsView());
         this.filterTextInput.addEventListener('input', () => this.updateResultsView());
         this.exportBtn.addEventListener('click', () => this.exportResults());
+        this.searchBtn.addEventListener('click', () => this.onSearch());
     }
 
     sortResults(results) {
@@ -62,7 +67,7 @@ class UI {
 
     renderResults(results) {
         this.resultsContainer.innerHTML = '';
-        
+
         if (results.length === 0) {
             this.resultsContainer.innerHTML = '<p>該当する脆弱性情報は見つかりませんでした。</p>';
             this.resultsControls.style.display = 'none';
@@ -85,6 +90,78 @@ class UI {
 
         this.resultsContainer.appendChild(resultsList);
         this.resultsControls.style.display = 'flex';
+    }
+
+    showMessage(message, type = '') {
+        this.messageBox.textContent = message;
+        this.messageBox.className = `message ${type}`.trim();
+        this.messageBox.style.display = 'block';
+        setTimeout(() => {
+            this.messageBox.style.display = 'none';
+        }, 4000);
+    }
+
+    showError(msg) {
+        this.showMessage(msg, 'error');
+    }
+
+    showInfo(msg) {
+        this.showMessage(msg, 'success');
+    }
+
+    showLoading() {
+        this.loadingOverlay.style.display = 'flex';
+    }
+
+    hideLoading() {
+        this.loadingOverlay.style.display = 'none';
+    }
+
+    validateSearchParams() {
+        if (!this.vendorSelect.value) {
+            this.showError('ベンダーを選択してください');
+            return false;
+        }
+        if (!this.productSelect.value) {
+            this.showError('製品を選択してください');
+            return false;
+        }
+        if (!this.startDateInput.value || !this.endDateInput.value) {
+            this.showError('検索期間を入力してください');
+            return false;
+        }
+        if (this.startDateInput.value > this.endDateInput.value) {
+            this.showError('開始日は終了日より前に設定してください');
+            return false;
+        }
+        return true;
+    }
+
+    exportResults() {
+        if (!this.currentResults.length) {
+            this.showError('エクスポートする結果がありません');
+            return;
+        }
+
+        const header = ['タイトル', '公開日', '説明', 'リンク'];
+        const rows = this.currentResults.map(r => [
+            r.title,
+            r.published,
+            r.description,
+            r.link
+        ]);
+
+        const csvContent = [header, ...rows]
+            .map(row => row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(','))
+            .join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'results.csv';
+        a.click();
+        URL.revokeObjectURL(url);
     }
 
     initializeHistoryEventListeners() {
